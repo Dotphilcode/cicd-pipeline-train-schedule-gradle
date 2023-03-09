@@ -1,0 +1,29 @@
+plugins {
+  id "com.moowork.node" version "1.2.0"  /*plugin for dealing with nodejs build*/
+}
+
+node {
+  download = true  /*instructs the node plugin to download and install nodejs and npm locally for this project*/
+}
+
+task build
+
+task zip(type: Zip) {
+  from ('.') {   /*specifies the files that need to be included in zip*/
+    include "*"
+    include "bin/**"
+    include "data/**"
+    include "node_modules/**"
+    include "public/**"
+    include "routes/**"
+    include "views/**"
+  }
+  destinationDir(file("dist"))
+  baseName "trainSchedule"
+}
+build.dependsOn zip
+zip.dependsOn npm_build
+build.dependsOn npm_build  /*npm_build is a task in node plugin*/
+npm_build.dependsOn npmInstall  /*npmInstall is a task that download any shared library dependencies required by this nodejs application*/
+npm_build.dependsOn npm_test
+npm_test.dependsOn npmInstall  /*npm_test may depend on some of the library dependencies from npminstall*/
